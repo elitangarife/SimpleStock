@@ -1,8 +1,9 @@
 import { ProductRepository } from '../../domain/repositories/ProductRepository'
 import { Product } from '../../domain/entities/Product'
+import { v4 as uuidv4 } from 'uuid'
+
 
 interface CreateProductDTO {
-  id: string
   name: string
   description?: string
   price: number
@@ -15,11 +16,11 @@ export class CreateProduct {
   async execute(data: CreateProductDTO): Promise<Product> {
     const product = new Product({
       ...data,
-      createdAt: new Date(),
+      id: uuidv4(),         
+      createdAt: new Date(), 
     })
 
     await this.productRepository.save(product)
-
     return product
   }
 }

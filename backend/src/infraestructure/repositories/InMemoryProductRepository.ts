@@ -24,7 +24,23 @@ export class InMemoryProductRepository implements ProductRepository {
     return this.products
   }
 
+  async findById(id: string): Promise<Product | null> {
+    const product = this.products.find(p => p.id === id)
+    return product || null
+  }
+
   async save(product: Product): Promise<void> {
-    this.products.push(product)
+    const index = this.products.findIndex(p => p.id === product.id)
+    if (index >= 0) {
+      // Actualiza si ya existe
+      this.products[index] = product
+    } else {
+      // Agrega nuevo producto
+      this.products.push(product)
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    this.products = this.products.filter(p => p.id !== id)
   }
 }

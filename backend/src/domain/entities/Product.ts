@@ -67,4 +67,8 @@ export class Product {
 
     this.props.stock -= quantity;
   }
+
+  toJSON() {
+  return { ...this.props }
+}
 }

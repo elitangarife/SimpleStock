@@ -1,31 +1,52 @@
 import { Request, Response } from 'express'
-import { ListProducts } from '../../../application/use-case/list-products'
 import { CreateProduct } from '../../../application/use-case/create-product'
+import { ListProducts } from '../../../application/use-case/list-products'
+import { IncreaseStock } from '../../../application/use-case/increase-stock'
+import { DecreaseStock } from '../../../application/use-case/decrease-stock'
+import { ProductRepository } from '../../../domain/repositories/ProductRepository'
 import { InMemoryProductRepository } from '../../../infraestructure/repositories/InMemoryProductRepository'
+
+const productRepo: ProductRepository = new InMemoryProductRepository()
 
 export class ProductController {
   static async list(_req: Request, res: Response) {
-    const productRepository = new InMemoryProductRepository()
-    const listProducts = new ListProducts(productRepository)
-    const products = await listProducts.execute()
-    res.status(200).json(products)
+    const useCase = new ListProducts(productRepo)
+    const products = await useCase.execute()
+    res.json(products.map(p => p.toJSON()))
+    
   }
 
   static async create(req: Request, res: Response) {
-    const { id, name, description, price, stock } = req.body
-
-    const productRepository = new InMemoryProductRepository()
-    const createProduct = new CreateProduct(productRepository)
-
+    const useCase = new CreateProduct(productRepo)
     try {
-      const product = await createProduct.execute({ id, name, description, price, stock })
-      res.status(201).json(product)
-    } catch (err: unknown) {
-        if (err instanceof Error) {
-            res.status(400).json({ error: err.message })
-        } else {
-            res.status(400).json({ error: 'Unknown error' })
-        }
+      const product = await useCase.execute(req.body)
+      res.status(201).json(product.toJSON())
+    } catch (err: any) {
+      res.status(400).json({ error: err.message })
+    }
+  }
+
+  static async increaseStock(req: Request, res: Response) {
+    const { id } = req.params
+    const { quantity } = req.body
+    const useCase = new IncreaseStock(productRepo)
+    try {
+      await useCase.execute(id, quantity)
+      res.json({ message: 'Stock increased' })
+    } catch (err: any) {
+      res.status(400).json({ error: err.message })
+    }
+  }
+
+  static async decreaseStock(req: Request, res: Response) {
+    const { id } = req.params
+    const { quantity } = req.body
+    const useCase = new DecreaseStock(productRepo)
+    try {
+      await useCase.execute(id, quantity)
+      res.json({ message: 'Stock decreased' })
+    } catch (err: any) {
+      res.status(400).json({ error: err.message })
     }
   }
 }
