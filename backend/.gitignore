@@ -6,3 +6,5 @@ dist/
 
 # Variables de entorno
 .env
+
+/src/generated/prisma

@@ -4,9 +4,10 @@ import { ListProducts } from '../../../application/use-case/list-products'
 import { IncreaseStock } from '../../../application/use-case/increase-stock'
 import { DecreaseStock } from '../../../application/use-case/decrease-stock'
 import { ProductRepository } from '../../../domain/repositories/ProductRepository'
-import { InMemoryProductRepository } from '../../../infraestructure/repositories/InMemoryProductRepository'
+import { PrismaProductRepository } from '../../../infraestructure/repositories/PrismaProductRepository'
 
-const productRepo: ProductRepository = new InMemoryProductRepository()
+const productRepo: ProductRepository = new PrismaProductRepository()
+
 
 export class ProductController {
   static async list(_req: Request, res: Response) {
@@ -19,7 +20,11 @@ export class ProductController {
   static async create(req: Request, res: Response) {
     const useCase = new CreateProduct(productRepo)
     try {
-      const product = await useCase.execute(req.body)
+      const productData = {
+        ...req.body,
+        stock: req.body.stock ?? 0
+      }
+      const product = await useCase.execute(productData)
       res.status(201).json(product.toJSON())
     } catch (err: any) {
       res.status(400).json({ error: err.message })
@@ -43,6 +48,7 @@ export class ProductController {
     const { quantity } = req.body
     const useCase = new DecreaseStock(productRepo)
     try {
+      
       await useCase.execute(id, quantity)
       res.json({ message: 'Stock decreased' })
     } catch (err: any) {

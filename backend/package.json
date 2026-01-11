@@ -12,9 +12,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^4.16.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "prisma": "^4.16.2",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
