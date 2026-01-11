@@ -1,0 +1,28 @@
+
+services:
+  db:
+    image: postgres:15
+    container_name: inventario-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Calabacito1234+
+      POSTGRES_DB: inventario
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: inventario-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:Calabacito1234+@db:5432/inventario?schema=public
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
