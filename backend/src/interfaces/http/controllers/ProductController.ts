@@ -31,28 +31,28 @@ export class ProductController {
     }
   }
 
-  static async increaseStock(req: Request, res: Response) {
-    const { id } = req.params
-    const { quantity } = req.body
-    const useCase = new IncreaseStock(productRepo)
-    try {
-      await useCase.execute(id, quantity)
-      res.json({ message: 'Stock increased' })
-    } catch (err: any) {
-      res.status(400).json({ error: err.message })
-    }
+ static async increaseStock(req: Request, res: Response) {
+  const { id } = req.params
+  const { quantity } = req.body
+  const useCase = new IncreaseStock(productRepo)
+  try {
+    // Devuelve el producto actualizado
+    const updatedProduct = await useCase.execute(id, quantity)
+    res.json(updatedProduct.toJSON())  // <-- aquí
+  } catch (err: any) {
+    res.status(400).json({ error: err.message })
   }
+}
 
-  static async decreaseStock(req: Request, res: Response) {
-    const { id } = req.params
-    const { quantity } = req.body
-    const useCase = new DecreaseStock(productRepo)
-    try {
-      
-      await useCase.execute(id, quantity)
-      res.json({ message: 'Stock decreased' })
-    } catch (err: any) {
-      res.status(400).json({ error: err.message })
-    }
+static async decreaseStock(req: Request, res: Response) {
+  const { id } = req.params
+  const { quantity } = req.body
+  const useCase = new DecreaseStock(productRepo)
+  try {
+    const updatedProduct = await useCase.execute(id, quantity)
+    res.json(updatedProduct.toJSON())  // <-- aquí
+  } catch (err: any) {
+    res.status(400).json({ error: err.message })
   }
+}
 }
