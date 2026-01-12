@@ -18,7 +18,7 @@ app.post('/products/:id/increase', ProductController.increaseStock);
 app.post('/products/:id/decrease', ProductController.decreaseStock);
 
 // Ventas
-app.get('/sales', SalesController.create);
+app.get('/sales', SalesController.list);
 app.post('/sales', SalesController.create);
 
 const PORT = process.env.PORT || 3000;
