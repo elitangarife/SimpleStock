@@ -8,10 +8,19 @@ datasource db {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String   @id
   name        String
   description String?
   price       Float
-  stock       Int      @default(0)
-  createdAt   DateTime @default(now())
+  stock       Int
+  createdAt   DateTime
+  sales       Sale[]   @relation("ProductSales")
+}
+
+model Sale {
+  id        String   @id
+  product   Product  @relation("ProductSales", fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  date      DateTime
 }

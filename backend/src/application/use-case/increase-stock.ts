@@ -10,7 +10,6 @@ export class IncreaseStock {
     product.increaseStock(quantity)
     await this.productRepository.save(product)
 
-    return product // <--- retornamos el producto actualizado
+    return product.toJSON()
   }
 }
-

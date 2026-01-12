@@ -5,6 +5,7 @@ import { IncreaseStock } from '../../../application/use-case/increase-stock'
 import { DecreaseStock } from '../../../application/use-case/decrease-stock'
 import { ProductRepository } from '../../../domain/repositories/ProductRepository'
 import { PrismaProductRepository } from '../../../infraestructure/repositories/PrismaProductRepository'
+import { Product } from '../../../domain/entities/Product'
 
 const productRepo: ProductRepository = new PrismaProductRepository()
 
@@ -32,27 +33,28 @@ export class ProductController {
   }
 
  static async increaseStock(req: Request, res: Response) {
-  const { id } = req.params
-  const { quantity } = req.body
-  const useCase = new IncreaseStock(productRepo)
+  const { id } = req.params;
+  const { quantity } = req.body;
+  const useCase = new IncreaseStock(productRepo);
   try {
-    // Devuelve el producto actualizado
-    const updatedProduct = await useCase.execute(id, quantity)
-    res.json(updatedProduct.toJSON())  // <-- aquí
+    const updatedProductData = await useCase.execute(id, quantity); // viene de Prisma
+    const updatedProduct = new Product(updatedProductData); // ⚡ convertir a clase Product
+    res.json(updatedProduct.toJSON());
   } catch (err: any) {
-    res.status(400).json({ error: err.message })
+    res.status(400).json({ error: err.message });
   }
 }
 
 static async decreaseStock(req: Request, res: Response) {
-  const { id } = req.params
-  const { quantity } = req.body
-  const useCase = new DecreaseStock(productRepo)
+  const { id } = req.params;
+  const { quantity } = req.body;
+  const useCase = new DecreaseStock(productRepo);
   try {
-    const updatedProduct = await useCase.execute(id, quantity)
-    res.json(updatedProduct.toJSON())  // <-- aquí
+    const updatedProductData = await useCase.execute(id, quantity);
+    const updatedProduct = new Product(updatedProductData);
+    res.json(updatedProduct.toJSON());
   } catch (err: any) {
-    res.status(400).json({ error: err.message })
+    res.status(400).json({ error: err.message });
   }
 }
 }
